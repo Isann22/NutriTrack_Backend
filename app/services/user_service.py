@@ -44,20 +44,3 @@ def update_user_profile(user_id, data):
     )
     
     return "Profil berhasil diperbarui"
-
-def update_user_targets(user_id, data):
-    user_obj = ObjectId(user_id)
-
-    update_data = {
-        "targets.calories": int(data.get('calories', 0)),
-        "targets.protein": int(data.get('protein', 0)),
-        "targets.fat": int(data.get('fat', 0)),
-        "targets.carbs": int(data.get('carbs', 0))
-    }
-
-    mongo.db.users.update_one(
-        {"_id": user_obj},
-        {"$set": update_data}
-    )
-
-    return "Rencana nutrisi berhasil diperbarui"

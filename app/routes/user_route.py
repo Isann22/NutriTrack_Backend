@@ -27,8 +27,6 @@ def update_profile():
     try:
         user_id = get_jwt_identity()
         data = request.get_json()
-        print(data)
-        print(data.get('nama_lengkap'))
         msg = update_user_profile(user_id, data)
         return jsonify({"message": msg}), 200
     except Exception as e:

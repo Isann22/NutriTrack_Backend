@@ -29,6 +29,7 @@ def analyze_food(food_name,food_name_display, meal_type,user_id):
         # weight_data = round(float(response_esp.text.strip()))
         
        
+       
         weight_float =random.randint(50, 200)
         weight_data = round(float(weight_float))
      

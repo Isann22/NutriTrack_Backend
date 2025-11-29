@@ -5,15 +5,16 @@ from app.errors.exceptions import (
     NutritionAPIFetchError, 
     NoNutritionDataFound
 )
-from bson import ObjectId
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from bson.json_util import dumps
+
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 
 food_bp = Blueprint('food', __name__, url_prefix='/api/food')
 
 @food_bp.route('/analyze', methods=['POST'])
+
 @jwt_required()
 def handle_analyze_food():
     try:
@@ -32,7 +33,6 @@ def handle_analyze_food():
         if not meal_type:
             return jsonify({"error": "mealType tidak boleh kosong"}), 400
 
-        print(user_id)
         result = analyze_food(food_name,food_name_display , meal_type,user_id) 
         
         return jsonify(result), 200

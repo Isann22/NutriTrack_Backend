@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.services.auth_service import register_user,login_user
-from app.errors.exceptions import ValidationError, DuplicateUserError , AuthError
+from app.errors.exceptions import ValidationError, AuthError,DuplicateUserError
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
