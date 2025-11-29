@@ -10,7 +10,7 @@ from flask import current_app
 from app.extensions import mongo
 import random
 
-def analyze_food(food_name,food_name_display, meal_type):
+def analyze_food(food_name,food_name_display, meal_type,user_id):
     esp32_url = current_app.config.get('ESP32_URL')
     calorie_ninja_api_url = current_app.config.get('CALORIE_NINJA_API_URL')
     calorie_ninja_api_key = current_app.config.get('CALORIE_NINJA_API_KEY')
@@ -47,7 +47,7 @@ def analyze_food(food_name,food_name_display, meal_type):
         food_item = nutrition_data['items'][0]
 
        
-        user_id_obj = ObjectId("68de776fa1396d792bf75555") 
+        user_id_obj = ObjectId(user_id) 
         today = datetime.combine(date.today(), datetime.min.time())
    
 

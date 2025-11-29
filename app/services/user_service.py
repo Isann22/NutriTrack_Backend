@@ -1,39 +1,63 @@
-from datetime import datetime
+from bson.objectid import ObjectId
 from app.extensions import mongo
-import bcrypt
-from app.errors.exceptions import ValidationError, DuplicateUserError
+from app.errors.exceptions import ValidationError
 
-def register_user(data) :
+def get_user_profile(user_id):
+    user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
     
-    required_fields = [
-        'email', 'password', 'nama_lengkap', 'tanggal_lahir', 
-        'berat_badan_kg', 'tinggi_badan_cm'
-    ]
+    if not user:
+        raise ValidationError("User tidak ditemukan")
 
-    if not all(field in data for field in required_fields):
-        missing = [field for field in required_fields if field not in data]
-        raise ValidationError(f"Field berikut wajib diisi: {', '.join(missing)}")
-    
-    email = data['email']
-    password = data['password']
+    profile = user.get('profile', {})
+    targets = user.get('targets', {})
 
-    if mongo.db.users.find_one({"email": email}):
-        raise DuplicateUserError("Email sudah terdaftar.")
-
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-
-    new_user_document = {
-        "email": email,
-        "hashed_password": hashed_password,
-        "createdAt": datetime.utcnow(),
-        "profile": {
-            "nama_lengkap": data['nama_lengkap'],
-            "tanggal_lahir": data['tanggal_lahir'],
-            "berat_badan_kg": data['berat_badan_kg'],
-            "tinggi_badan_cm": data['tinggi_badan_cm']
+    return {
+        "email": user.get('email'),
+        "nama_lengkap": profile.get('nama_lengkap'),
+        "berat_badan_kg": profile.get('berat_badan_kg'),
+        "tinggi_badan_cm": profile.get('tinggi_badan_cm'),
+        "targets": {
+            "calories": targets.get('calories', 2000),
+            "protein": targets.get('protein', 120),
+            "fat": targets.get('fat', 70),
+            "carbs": targets.get('carbs', 250)
         }
     }
 
-    result = mongo.db.users.insert_one(new_user_document)
-  
-    return str(result.inserted_id)
+def update_user_profile(user_id, data):
+    user_obj = ObjectId(user_id)
+
+    
+    update_data = {
+        "profile.nama_lengkap": data.get('nama_lengkap'),
+        "profile.berat_badan_kg": int(data.get('berat_badan_kg', 0)),
+        "profile.tinggi_badan_cm": int(data.get('tinggi_badan_cm', 0)),
+        "targets.calories": int(data.get('calories', 0)),
+        "targets.protein": int(data.get('protein', 0)),
+        "targets.fat": int(data.get('fat', 0)),
+        "targets.carbs": int(data.get('carbs', 0))
+    }
+
+    mongo.db.users.update_one(
+        {"_id": user_obj},
+        {"$set": update_data}
+    )
+    
+    return "Profil berhasil diperbarui"
+
+def update_user_targets(user_id, data):
+    user_obj = ObjectId(user_id)
+
+    update_data = {
+        "targets.calories": int(data.get('calories', 0)),
+        "targets.protein": int(data.get('protein', 0)),
+        "targets.fat": int(data.get('fat', 0)),
+        "targets.carbs": int(data.get('carbs', 0))
+    }
+
+    mongo.db.users.update_one(
+        {"_id": user_obj},
+        {"$set": update_data}
+    )
+
+    return "Rencana nutrisi berhasil diperbarui"

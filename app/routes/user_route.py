@@ -1,33 +1,35 @@
-from flask import Blueprint, request, jsonify
-from app.services.user_service import register_user
-from app.errors.exceptions import ValidationError, DuplicateUserError
+from flask import Blueprint, jsonify,request
+from app.services.user_service import get_user_profile,update_user_profile,update_user_targets
+from app.errors.exceptions import ValidationError
+from flask_jwt_extended import jwt_required, get_jwt_identity
+import requests
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
+user_bp = Blueprint('user', __name__, url_prefix='/api/user')
 
-@auth_bp.route('/register', methods=['POST'])
-def handle_register():
+@user_bp.route('/profile', methods=['GET'])
+
+@jwt_required()
+def get_profile():
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "Request body harus berupa JSON"}), 400
-
-        user_id = register_user(data)
+        user_id = get_jwt_identity()
+        data = get_user_profile(user_id)
+        return jsonify(data), 200
         
-        return jsonify({
-            "message": "Registrasi berhasil.",
-            "userId": user_id
-        }), 201
-
     except ValidationError as e:
-        return jsonify({"error": str(e)}), 400
-
-    except DuplicateUserError as e:
-        return jsonify({"error": str(e)}), 409  
-
+        return jsonify({"error": str(e)}), 404
     except Exception as e:
-        print(f"An unexpected error occurred in registration: {e}") 
-        return jsonify({"error": "Terjadi kesalahan pada server."}), 500
+        return jsonify({"error": str(e)}), 500
+    
 
-
-def handle_login() :
-    pass
+@user_bp.route('/profile/edit', methods=['PUT'])
+@jwt_required()
+def update_profile():
+    try:
+        user_id = get_jwt_identity()
+        data = request.get_json()
+        print(data)
+        print(data.get('nama_lengkap'))
+        msg = update_user_profile(user_id, data)
+        return jsonify({"message": msg}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

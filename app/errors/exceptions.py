@@ -1,6 +1,9 @@
 class ValidationError(Exception):
     pass
 
+class AuthError(Exception): 
+    pass
+
 class DuplicateUserError(Exception):
     pass
 

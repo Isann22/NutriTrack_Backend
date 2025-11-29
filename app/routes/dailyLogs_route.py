@@ -6,6 +6,7 @@ from app.errors.exceptions import (
     NoNutritionDataFound
 )
 from bson import ObjectId
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from bson.json_util import dumps
 
 
@@ -13,9 +14,12 @@ from bson.json_util import dumps
 food_bp = Blueprint('food', __name__, url_prefix='/api/food')
 
 @food_bp.route('/analyze', methods=['POST'])
+@jwt_required()
 def handle_analyze_food():
     try:
         data = request.get_json()
+        user_id = get_jwt_identity()
+        print(user_id)
         if not data:
             return jsonify({"error": "Request body harus berupa JSON"}), 400
 
@@ -28,7 +32,8 @@ def handle_analyze_food():
         if not meal_type:
             return jsonify({"error": "mealType tidak boleh kosong"}), 400
 
-        result = analyze_food(food_name,food_name_display , meal_type) 
+        print(user_id)
+        result = analyze_food(food_name,food_name_display , meal_type,user_id) 
         
         return jsonify(result), 200
     
@@ -42,10 +47,10 @@ def handle_analyze_food():
         return jsonify({"error": f"Terjadi kesalahan internal: {str(e)}"}), 500
 
 @food_bp.route('/history', methods=['GET'])
+@jwt_required()
 def get_history():
     try:
-        user_id = "68de776fa1396d792bf75555" 
-        
+        user_id = get_jwt_identity()
         logs = fetch_history_for_user(user_id)
         
         return dumps(logs), 200, {'Content-Type': 'application/json'}
