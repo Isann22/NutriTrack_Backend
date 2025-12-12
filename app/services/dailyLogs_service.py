@@ -23,15 +23,13 @@ def analyze_food(food_name,food_name_display, meal_type,user_id):
         raise ValidationError(f"mealType tidak valid. Harus salah satu dari: {VALID_MEAL_TYPES}")
 
     try:
-        # --- 1. Ambil Berat (Gunakan Mock Anda atau yang asli) ---
-        # response_esp = requests.get(esp32_url, timeout=15)
-        # response_esp.raise_for_status() 
-        # weight_data = round(float(response_esp.text.strip()))
+        
+        response_esp = requests.get(esp32_url, timeout=15)
+        response_esp.raise_for_status() 
+        weight_data = round(float(response_esp.text.strip()))
         
        
-       
-        weight_float =random.randint(50, 200)
-        weight_data = round(float(weight_float))
+    
      
         
         # --- 2. Ambil Data Nutrisi ---

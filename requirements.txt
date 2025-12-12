@@ -1,6 +1,7 @@
-Flask
-requests
-python-dotenv
-bcrypt
-Flask-PyMongo 
-flask-jwt-extended
+pandas
+numpy
+scikit-learn
+torch
+torchvision
+torchaudio
+joblib

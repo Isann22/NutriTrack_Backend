@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify,request
-from app.services.user_service import get_user_profile,update_user_profile,update_user_targets
+from app.services.user_service import get_user_profile,update_user_profile
 from app.errors.exceptions import ValidationError
 from flask_jwt_extended import jwt_required, get_jwt_identity
-import requests
+
 
 user_bp = Blueprint('user', __name__, url_prefix='/api/user')
 

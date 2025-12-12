@@ -6,7 +6,6 @@ from app.errors.exceptions import (
     NoNutritionDataFound
 )
 from bson.json_util import dumps
-
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 

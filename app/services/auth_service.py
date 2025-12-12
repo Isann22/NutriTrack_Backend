@@ -39,15 +39,15 @@ def register_user(data):
         
         "profile": {
             "nama_lengkap": data['nama_lengkap'],
-            "berat_badan_kg": 60, 
-            "tinggi_badan_cm": 170
+            "berat_badan_kg": 0, 
+            "tinggi_badan_cm": 0
         },
         
         "targets": {
-            "calories": 2000,
-            "protein": 120,
-            "fat": 70,
-            "carbs": 250
+            "calories": 0,
+            "protein": 0,
+            "fat": 0,
+            "carbs": 0
         }
     }
 

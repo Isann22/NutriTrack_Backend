@@ -2,6 +2,7 @@ from flask import Flask
 
 from  .routes.auth_route import auth_bp
 from .routes.user_route import user_bp
+from .routes.recomendation_route import recommendation_bp
 from .routes.dailyLogs_route import food_bp
 from .extensions import mongo,bcrypt,jwt
 from  .config import Config
@@ -19,5 +20,7 @@ def create_app():
     app.register_blueprint(user_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(food_bp)
+    app.register_blueprint(recommendation_bp)
+
 
     return app
