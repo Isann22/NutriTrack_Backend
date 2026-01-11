@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.services.dailyLogs_service import analyze_food,fetch_history_for_user
+from app.services.dailyLogs_service import analyze_food,fetch_history_for_user,analyze_recipe
 from app.errors.exceptions import (
     ValidationError, 
     NutritionAPIFetchError, 
@@ -56,3 +56,24 @@ def get_history():
 
     except Exception as e:
         return jsonify({"error": f"Terjadi kesalahan internal: {str(e)}"}), 500
+
+@food_bp.route('/analyze-recipe', methods=['POST'])
+@jwt_required()    
+def get_recipe():
+    if 'image' not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
+
+    file = request.files['image']
+    
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    try:
+    
+        result = analyze_recipe(file)
+        
+        return jsonify(result), 200
+
+    except Exception as e:
+        # Handle Error Service
+        return jsonify({"error": str(e)}), 500

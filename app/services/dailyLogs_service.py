@@ -8,7 +8,6 @@ from datetime import datetime, date
 from bson.objectid import ObjectId
 from flask import current_app 
 from app.extensions import mongo
-import random
 
 def analyze_food(food_name,food_name_display, meal_type,user_id):
     esp32_url = current_app.config.get('ESP32_URL')
@@ -28,15 +27,12 @@ def analyze_food(food_name,food_name_display, meal_type,user_id):
         response_esp.raise_for_status() 
         weight_data = round(float(response_esp.text.strip()))
         
-       
-    
-     
         
         # --- 2. Ambil Data Nutrisi ---
         full_query = f"{weight_data}g {food_name}"
         headers_ninja = {'X-Api-Key': calorie_ninja_api_key}
         params_ninja = {'query': full_query}
-        response_ninja = requests.get(calorie_ninja_api_url, headers=headers_ninja, params=params_ninja, timeout=10)
+        response_ninja = requests.get(f"{calorie_ninja_api_url}/nutrition", headers=headers_ninja, params=params_ninja, timeout=10)
         response_ninja.raise_for_status()
         nutrition_data = response_ninja.json()
 
@@ -99,7 +95,49 @@ def analyze_food(food_name,food_name_display, meal_type,user_id):
     
     except requests.exceptions.RequestException as e:
         raise NutritionAPIFetchError(f"Gagal terhubung ke CalorieNinjas: {e}")
+
+def analyze_recipe(image_file):
+    try:
+        calorie_ninja_api_url = current_app.config.get('CALORIE_NINJA_API_URL')
+        calorie_ninja_api_key = current_app.config.get('CALORIE_NINJA_API_KEY')
+        files = {'image': (image_file.filename, image_file.read(), image_file.content_type)}
+        headers = {'X-Api-Key': calorie_ninja_api_key}
+
+        # 2. Request ke External API
+        response = requests.post(f"{calorie_ninja_api_url}/imagetextnutrition", headers=headers, files=files)
+
+        if response.status_code != 200:
+            raise Exception(f"CalorieNinjas Error: {response.text}")
+
+        data = response.json()
+        items = data.get('items', [])
+
     
+        processed_items = []
+        
+        for item in items:
+            current_item = {
+                "name": item.get('name', 'Unknown'),
+                "calories": float(item.get('calories', 0)),
+                "serving_size_g": float(item.get('serving_size_g', 0)),
+                "fat_total_g": float(item.get('fat_total_g', 0)),
+                "fat_saturated_g": float(item.get('fat_saturated_g', 0)),
+                "protein_g": float(item.get('protein_g', 0)),
+                "sodium_mg": int(item.get('sodium_mg', 0)),
+                "potassium_mg": int(item.get('potassium_mg', 0)),
+                "cholesterol_mg": int(item.get('cholesterol_mg', 0)),
+                "carbohydrates_total_g": float(item.get('carbohydrates_total_g', 0)),
+                "fiber_g": float(item.get('fiber_g', 0)),
+                "sugar_g": float(item.get('sugar_g', 0))
+            }
+            processed_items.append(current_item)
+
+        return {"items": processed_items}
+
+    except Exception as e:
+        print(f"Service Error: {str(e)}")
+        raise e
+
 def fetch_history_for_user(user_id):
     user_id_obj = ObjectId(user_id) 
 
