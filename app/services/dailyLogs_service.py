@@ -8,6 +8,7 @@ from datetime import datetime, date
 from bson.objectid import ObjectId
 from flask import current_app 
 from app.extensions import mongo
+import random
 
 def analyze_food(food_name,food_name_display, meal_type,user_id):
     esp32_url = current_app.config.get('ESP32_URL')
@@ -23,10 +24,13 @@ def analyze_food(food_name,food_name_display, meal_type,user_id):
 
     try:
         
-        response_esp = requests.get(esp32_url, timeout=15)
-        response_esp.raise_for_status() 
-        weight_data = round(float(response_esp.text.strip()))
+        # Data dari esp32
+        # response_esp = requests.get(esp32_url, timeout=15)
+        # response_esp.raise_for_status() 
+        # weight_data = round(float(response_esp.text.strip()))
         
+        # Data random
+        weight_data = random.randint(10, 100)
         
         # --- 2. Ambil Data Nutrisi ---
         full_query = f"{weight_data}g {food_name}"
