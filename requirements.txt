@@ -1,7 +1,20 @@
+# API
+Flask
+Flask-Bcrypt
+Flask-JWT-Extended
+Flask-PyMongo
+Flask-WTF
+flask-swagger-ui
+
+# Data & ML
 pandas
-numpy
 scikit-learn
+joblib
 torch
 torchvision
 torchaudio
-joblib
+
+# Utilities
+requests
+python-dotenv
+email-validator
